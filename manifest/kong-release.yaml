@@ -1,0 +1,465 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kong
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: kong
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: kong
+      version: 2.19.1
+  interval: 1m0s
+  releaseName: kong
+  targetNamespace: kong
+  values:
+    admin:
+      annotations: {}
+      enabled: true
+      http:
+        containerPort: 8001
+        enabled: true
+        parameters: []
+        servicePort: 8001
+      ingress:
+        annotations: {}
+        enabled: true
+        hostname: admin.kong.api.local
+        ingressClassName: nginx
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        client:
+          caBundle: ""
+          secretName: ""
+        containerPort: 8444
+        enabled: false
+        parameters:
+        - http2
+        servicePort: 8444
+      type: ClusterIP
+    autoscaling:
+      behavior: {}
+      enabled: false
+      maxReplicas: 5
+      metrics:
+      - resource:
+          name: cpu
+          target:
+            averageUtilization: 80
+            type: Utilization
+        type: Resource
+      minReplicas: 2
+      targetCPUUtilizationPercentage: null
+    certificates:
+      admin:
+        clusterIssuer: ""
+        commonName: null
+        dnsNames: []
+        enabled: true
+        issuer: ""
+      cluster:
+        clusterIssuer: ""
+        enabled: true
+        issuer: ""
+      clusterIssuer: ""
+      enabled: false
+      issuer: ""
+      portal:
+        clusterIssuer: ""
+        commonName: null
+        dnsNames: []
+        enabled: true
+        issuer: ""
+      proxy:
+        clusterIssuer: ""
+        commonName: null
+        dnsNames: []
+        enabled: false
+        issuer: ""
+    cluster:
+      annotations: {}
+      enabled: false
+      ingress:
+        annotations: {}
+        enabled: false
+        hostname: null
+        ingressClassName: null
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        containerPort: 8005
+        enabled: false
+        parameters: []
+        servicePort: 8005
+      type: ClusterIP
+    clusterCaSecretName: ""
+    clustertelemetry:
+      annotations: {}
+      enabled: false
+      ingress:
+        annotations: {}
+        enabled: false
+        hostname: null
+        ingressClassName: null
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        containerPort: 8006
+        enabled: false
+        parameters: []
+        servicePort: 8006
+      type: ClusterIP
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+    dblessConfig:
+      config: ""
+      configMap: ""
+      secret: ""
+    deployment:
+      daemonset: false
+      hostNetwork: false
+      kong:
+        enabled: true
+      prefixDir:
+        sizeLimit: 256Mi
+      serviceAccount:
+        automountServiceAccountToken: false
+        create: false
+      test:
+        enabled: false
+      tmpDir:
+        sizeLimit: 1Gi
+    deploymentAnnotations: {}
+    enterprise:
+      enabled: true
+      portal:
+        enabled: false
+      rbac:
+        admin_gui_auth: basic-auth
+        admin_gui_auth_conf_secret: CHANGEME-admin-gui-auth-conf-secret
+        enabled: false
+        session_conf_secret: kong-session-config
+      smtp:
+        admin_emails_from: none@example.com
+        admin_emails_reply_to: none@example.com
+        auth:
+          smtp_password_secret: CHANGEME-smtp-password
+          smtp_username: ""
+        enabled: false
+        portal_emails_from: none@example.com
+        portal_emails_reply_to: none@example.com
+        smtp_admin_emails: none@example.com
+        smtp_auth_type: ""
+        smtp_host: smtp.example.com
+        smtp_port: 587
+        smtp_ssl: nil
+        smtp_starttls: true
+      vitals:
+        enabled: true
+    env:
+      admin_access_log: /dev/stdout
+      admin_api_uri: http://admin.kong.api.local
+      admin_error_log: /dev/stderr
+      admin_gui_access_log: /dev/stdout
+      admin_gui_error_log: /dev/stderr
+      admin_gui_url: http://manager.kong.api.local
+      database: "off"
+      nginx_worker_processes: "2"
+      portal_api_access_log: /dev/stdout
+      portal_api_error_log: /dev/stderr
+      prefix: /kong_prefix/
+      proxy_access_log: /dev/stdout
+      proxy_error_log: /dev/stderr
+      proxy_url: http://proxy.kong.api.local
+      router_flavor: traditional
+    extraConfigMaps: []
+    extraLabels: {}
+    extraObjects: []
+    extraSecrets: []
+    image:
+      pullPolicy: IfNotPresent
+      repository: kong/kong-gateway
+      tag: "3.2"
+    ingressController:
+      adminApi:
+        tls:
+          client:
+            caSecretName: ""
+            certProvided: false
+            enabled: false
+            secretName: ""
+      admissionWebhook:
+        certificate:
+          provided: false
+        enabled: true
+        failurePolicy: Ignore
+        port: 8080
+        service:
+          labels: {}
+      args: []
+      enabled: false
+      env:
+        kong_admin_tls_skip_verify: true
+      gatewayDiscovery:
+        adminApiService:
+          name: ""
+          namespace: ""
+        enabled: false
+      image:
+        effectiveSemver: null
+        repository: kong/kubernetes-ingress-controller
+        tag: "2.9"
+      ingressClass: kong
+      ingressClassAnnotations: {}
+      konnect:
+        apiHostname: us.kic.api.konghq.com
+        enabled: false
+        runtimeGroupID: ""
+        tlsClientCertSecretName: konnect-client-tls
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: 10254
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      rbac:
+        create: true
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: 10254
+          scheme: HTTP
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      resources: {}
+      watchNamespaces: []
+    lifecycle:
+      preStop:
+        exec:
+          command:
+          - kong
+          - quit
+          - --wait=15
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /status
+        port: status
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    manager:
+      annotations: {}
+      enabled: true
+      http:
+        containerPort: 8002
+        enabled: true
+        parameters: []
+        servicePort: 8002
+      ingress:
+        annotations:
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        enabled: true
+        hostname: manager.kong.api.local
+        ingressClassName: nginx
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        containerPort: 8445
+        enabled: false
+        parameters:
+        - http2
+        servicePort: 8445
+      type: ClusterIP
+    migrations:
+      annotations:
+        sidecar.istio.io/inject: false
+      backoffLimit: null
+      jobAnnotations: {}
+      postUpgrade: true
+      preUpgrade: true
+      resources: {}
+    nodeSelector: {}
+    plugins: {}
+    podAnnotations:
+      kuma.io/gateway: enabled
+      traffic.sidecar.istio.io/includeInboundPorts: ""
+    podDisruptionBudget:
+      enabled: false
+    podLabels: {}
+    podSecurityPolicy:
+      annotations: {}
+      enabled: false
+      labels: {}
+      spec:
+        allowPrivilegeEscalation: false
+        fsGroup:
+          rule: RunAsAny
+        hostIPC: false
+        hostNetwork: false
+        hostPID: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsGroup:
+          rule: RunAsAny
+        runAsUser:
+          rule: RunAsAny
+        seLinux:
+          rule: RunAsAny
+        supplementalGroups:
+          rule: RunAsAny
+        volumes:
+        - configMap
+        - secret
+        - emptyDir
+        - projected
+    portal:
+      annotations: {}
+      enabled: true
+      http:
+        containerPort: 8003
+        enabled: true
+        parameters: []
+        servicePort: 8003
+      ingress:
+        annotations:
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        enabled: true
+        hostname: portal.kong.api.local
+        ingressClassName: nginx
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        containerPort: 8446
+        enabled: false
+        parameters:
+        - http2
+        servicePort: 8446
+      type: ClusterIP
+    portalapi:
+      annotations: {}
+      enabled: true
+      http:
+        containerPort: 8004
+        enabled: true
+        parameters: []
+        servicePort: 8004
+      ingress:
+        annotations:
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        enabled: true
+        hostname: portalapi.kong.api.local
+        ingressClassName: nginx
+        path: /
+        pathType: ImplementationSpecific
+      labels: {}
+      loadBalancerClass: null
+      tls:
+        containerPort: 8447
+        enabled: false
+        parameters:
+        - http2
+        servicePort: 8447
+      type: ClusterIP
+    postgresql:
+      auth:
+        database: kong
+        username: kong
+      enabled: false
+      image:
+        tag: 13.6.0-debian-10-r52
+      service:
+        ports:
+          postgresql: "5432"
+    priorityClassName: ""
+    proxy:
+      annotations: {}
+      enabled: true
+      http:
+        containerPort: 8000
+        enabled: true
+        parameters: []
+        servicePort: 80
+      ingress:
+        annotations:
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        enabled: true
+        hostname: proxy.kong.api.local
+        ingressClassName: nginx
+        path: /
+        pathType: ImplementationSpecific
+      labels:
+        enable-metrics: "true"
+      loadBalancerClass: null
+      nameOverride: ""
+      stream: []
+      tls:
+        containerPort: 8443
+        enabled: false
+        parameters:
+        - http2
+        servicePort: 443
+      type: ClusterIP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /status
+        port: status
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    replicaCount: 1
+    resources: {}
+    secretVolumes: []
+    securityContext: {}
+    serviceMonitor:
+      enabled: false
+    status:
+      enabled: true
+      http:
+        containerPort: 8100
+        enabled: true
+        parameters: []
+      tls:
+        containerPort: 8543
+        enabled: false
+        parameters: []
+    terminationGracePeriodSeconds: 30
+    tolerations: []
+    udpProxy:
+      annotations: {}
+      enabled: false
+      labels: {}
+      loadBalancerClass: null
+      stream: []
+      type: LoadBalancer
+    updateStrategy: {}
+    waitImage:
+      enabled: true
+      pullPolicy: IfNotPresent
