@@ -1,0 +1,17 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: release
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: weaveworks-charts
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: ww-gitops
+      version: 0.22.0
+  interval: 1m0s
+  releaseName: dashboard
