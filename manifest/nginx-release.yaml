@@ -16,3 +16,6 @@ spec:
   interval: 1m0s
   releaseName: nginx
   targetNamespace: ingress-nginx
+  values:
+    externalIPs: []
+    loadBalancerIP: "localhost"
