@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_kong_deployment_1685363551763-pr-trigger-input-set
+  identifier: Build_kong_deployment_1685363551763prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_kong_deployment_1685363551763
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
